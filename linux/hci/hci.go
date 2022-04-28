@@ -9,10 +9,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-ble/ble"
-	"github.com/go-ble/ble/linux/hci/cmd"
-	"github.com/go-ble/ble/linux/hci/evt"
-	"github.com/go-ble/ble/linux/hci/socket"
+	"github.com/LassiHeikkila/ble"
+	"github.com/LassiHeikkila/ble/linux/hci/cmd"
+	"github.com/LassiHeikkila/ble/linux/hci/evt"
+	"github.com/LassiHeikkila/ble/linux/hci/socket"
 	"github.com/pkg/errors"
 )
 
@@ -435,6 +435,7 @@ func (h *HCI) handleLEAdvertisingReport(b []byte) error {
 		default:
 			a = newAdvertisement(e, i)
 		}
+
 		go h.advHandler(a)
 	}
 

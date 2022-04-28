@@ -3,9 +3,9 @@ package hci
 import (
 	"net"
 
-	"github.com/go-ble/ble"
-	"github.com/go-ble/ble/linux/adv"
-	"github.com/go-ble/ble/linux/hci/evt"
+	"github.com/LassiHeikkila/ble"
+	"github.com/LassiHeikkila/ble/linux/adv"
+	"github.com/LassiHeikkila/ble/linux/hci/evt"
 )
 
 // RandomAddress is a Random Device Address.
@@ -53,12 +53,20 @@ func (a *Advertisement) packets() *adv.Packet {
 
 // LocalName returns the LocalName of the remote peripheral.
 func (a *Advertisement) LocalName() string {
-	return a.packets().LocalName()
+	if a.packets().LocalName() != "" {
+		return a.packets().LocalName()
+	}
+	// sometimes name can be found in scan response packet, e.g. in Teltonika beacons:
+	// https://wiki.teltonika-gps.com/view/EYE_SENSOR_/_BTSMP1#Protocol_description
+	if a.sr != nil && a.sr.LocalName() != "" {
+		return a.sr.LocalName()
+	}
+	return ""
 }
 
 // ManufacturerData returns the ManufacturerData of the advertisement.
-func (a *Advertisement) ManufacturerData() []byte {
-	return a.packets().ManufacturerData()
+func (a *Advertisement) ManufacturerData(keys ...uint16) []byte {
+	return a.packets().ManufacturerData(keys...)
 }
 
 // ServiceData returns the service data of the advertisement.
@@ -120,7 +128,7 @@ func (a *Advertisement) AddressType() uint8 {
 }
 
 // Data returns the advertising data of the packet.
-// This is linux sepcific.
+// This is linux specific.
 func (a *Advertisement) Data() []byte {
 	return a.e.Data(a.i)
 }

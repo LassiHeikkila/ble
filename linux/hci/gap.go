@@ -7,9 +7,9 @@ import (
 	"net"
 	"time"
 
-	"github.com/go-ble/ble"
-	"github.com/go-ble/ble/linux/adv"
-	"github.com/go-ble/ble/linux/gatt"
+	"github.com/LassiHeikkila/ble"
+	"github.com/LassiHeikkila/ble/linux/adv"
+	"github.com/LassiHeikkila/ble/linux/gatt"
 	"github.com/pkg/errors"
 )
 
@@ -76,10 +76,10 @@ func (h *HCI) AdvertiseAdv(a ble.Advertisement) error {
 	if a.ManufacturerData() != nil {
 		man := a.ManufacturerData()
 		id := binary.LittleEndian.Uint16(man[0:2])
-		manufacuturerData := adv.ManufacturerData(id, man[2:])
+		manufacturerData := adv.ManufacturerData(id, man[2:])
 		switch {
-		case ad.Append(manufacuturerData) == nil:
-		case sr.Append(manufacuturerData) == nil:
+		case ad.Append(manufacturerData) == nil:
+		case sr.Append(manufacturerData) == nil:
 		}
 	}
 	if err := h.SetAdvertisement(ad.Bytes(), sr.Bytes()); err != nil {

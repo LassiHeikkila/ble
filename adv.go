@@ -9,7 +9,7 @@ type AdvFilter func(a Advertisement) bool
 // Advertisement ...
 type Advertisement interface {
 	LocalName() string
-	ManufacturerData() []byte
+	ManufacturerData(...uint16) []byte
 	ServiceData() []ServiceData
 	Services() []UUID
 	OverflowService() []UUID
