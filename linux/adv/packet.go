@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 
-	"github.com/go-ble/ble"
+	"github.com/LassiHeikkila/ble"
 )
 
 // Packet is an implemntation of ble.AdvPacket for crafting or parsing an advertising packet or scan response.
