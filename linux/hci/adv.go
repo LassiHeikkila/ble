@@ -65,8 +65,8 @@ func (a *Advertisement) LocalName() string {
 }
 
 // ManufacturerData returns the ManufacturerData of the advertisement.
-func (a *Advertisement) ManufacturerData() []byte {
-	return a.packets().ManufacturerData()
+func (a *Advertisement) ManufacturerData(keys ...uint16) []byte {
+	return a.packets().ManufacturerData(keys...)
 }
 
 // ServiceData returns the service data of the advertisement.
@@ -128,7 +128,7 @@ func (a *Advertisement) AddressType() uint8 {
 }
 
 // Data returns the advertising data of the packet.
-// This is linux sepcific.
+// This is linux specific.
 func (a *Advertisement) Data() []byte {
 	return a.e.Data(a.i)
 }

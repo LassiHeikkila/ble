@@ -1,6 +1,7 @@
 package adv
 
 import (
+	"bytes"
 	"encoding/binary"
 
 	"github.com/go-ble/ble"
@@ -185,6 +186,32 @@ func (p *Packet) Field(typ byte) []byte {
 	return nil
 }
 
+// return all matching fields in case there are multiple
+func (p *Packet) Fields(typ byte) [][]byte {
+	var ret [][]byte
+	b := p.b
+	for len(b) > 0 {
+		if len(b) < 2 {
+			break
+		}
+		l, t := b[0], b[1]
+		if int(l) < 1 || len(b) < int(1+l) {
+			b = b[1+l:]
+			continue
+		}
+		if t == typ {
+			if ret == nil {
+				ret = make([][]byte, 0, 1)
+			}
+			ret = append(ret, b[2:2+l-1])
+			b = b[2+l-1:]
+			continue
+		}
+		b = b[1+l:]
+	}
+	return ret
+}
+
 func (p *Packet) getUUIDsByType(typ byte, u []ble.UUID, w int) []ble.UUID {
 	pos := 0
 	var b []byte
@@ -294,9 +321,22 @@ func (p *Packet) ServiceData() []ble.ServiceData {
 	return s
 }
 
-// ManufacturerData returns the ManufacturerData field if it presents.
-func (p *Packet) ManufacturerData() []byte {
-	return p.Field(manufacturerData)
+// ManufacturerData returns the ManufacturerData field if it's present.
+// Manufacturer ID may be optionally specified.
+// If not specified, returns first ManufacturerData field.
+// If specified, ManufacturerData matching first key is returned.
+func (p *Packet) ManufacturerData(keys ...uint16) []byte {
+	if len(keys) == 0 {
+		return p.Field(manufacturerData)
+	}
+
+	mds := p.Fields(manufacturerData)
+	for _, md := range mds {
+		if len(md) > 2 && bytes.Equal(md[0:2], []byte{byte(keys[0]), byte(keys[0] >> 8)}) {
+			return md
+		}
+	}
+	return nil
 }
 
 // Utility function for creating a list of uuids.
